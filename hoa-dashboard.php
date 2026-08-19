@@ -14,8 +14,8 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'HOA_DASH_VERSION', '0.0.2' );
-define( 'HOA_DASH_BUILD', '002' );
+define( 'HOA_DASH_VERSION', '0.0.3' );
+define( 'HOA_DASH_BUILD', '003' );
 define( 'HOA_DASH_PATH', plugin_dir_path( __FILE__ ) );
 define( 'HOA_DASH_URL', plugin_dir_url( __FILE__ ) );
 define( 'HOA_DASH_DB_VERSION', '1.0.0' );
@@ -24,6 +24,8 @@ define( 'HOA_DASH_DB_VERSION', '1.0.0' );
 require_once HOA_DASH_PATH . 'includes/class-activator.php';
 require_once HOA_DASH_PATH . 'includes/class-page-installer.php';
 require_once HOA_DASH_PATH . 'includes/class-documentation.php';
+require_once HOA_DASH_PATH . 'includes/class-rest-auth.php';
+require_once HOA_DASH_PATH . 'includes/class-rest-data.php';
 require_once HOA_DASH_PATH . 'includes/class-roles.php';
 require_once HOA_DASH_PATH . 'includes/class-settings.php';
 require_once HOA_DASH_PATH . 'includes/class-2fa-twilio.php';
@@ -76,9 +78,28 @@ final class HOA_Dashboard_Plugin {
 		new HOA_Dash_Documentation();
 		new HOA_Dash_Ajax();
 		new HOA_Dash_Login();
+		new HOA_Dash_REST_Auth();
+		new HOA_Dash_REST_Data();
 
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_front_assets' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
+		add_action( 'rest_api_init', array( $this, 'add_cors_support' ) );
+	}
+
+	/**
+	 * Allows the native iOS app (and any other REST client) to call
+	 * wp-json/hoa/v1/* endpoints cross-origin. Native apps don't send an
+	 * Origin header the way browsers do, so this mainly matters for testing
+	 * the API from a browser/Postman during development.
+	 */
+	public function add_cors_support() {
+		remove_filter( 'rest_pre_serve_request', 'rest_send_cors_headers' );
+		add_filter( 'rest_pre_serve_request', function ( $value ) {
+			header( 'Access-Control-Allow-Origin: *' );
+			header( 'Access-Control-Allow-Methods: GET, POST, OPTIONS' );
+			header( 'Access-Control-Allow-Headers: Authorization, Content-Type' );
+			return $value;
+		} );
 	}
 
 	public function load_textdomain() {

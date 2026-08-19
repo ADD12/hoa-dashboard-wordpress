@@ -196,6 +196,19 @@ class HOA_Dash_Activator {
 			UNIQUE KEY user_id (user_id)
 		) $charset_collate;";
 
+		// iOS/native app auth tokens (Bearer tokens, hashed at rest)
+		$sql[] = "CREATE TABLE {$p}app_tokens (
+			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+			user_id BIGINT UNSIGNED NOT NULL,
+			token_hash CHAR(64) NOT NULL,
+			device_name VARCHAR(191) NULL,
+			created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			last_used DATETIME NULL,
+			PRIMARY KEY (id),
+			UNIQUE KEY token_hash (token_hash),
+			KEY user_id (user_id)
+		) $charset_collate;";
+
 		foreach ( $sql as $statement ) {
 			dbDelta( $statement );
 		}

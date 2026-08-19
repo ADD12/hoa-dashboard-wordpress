@@ -4,7 +4,7 @@ Tags: hoa, homeowners association, reserves, dues, payments, 2fa
 Requires at least: 6.0
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 0.0.2
+Stable tag: 0.0.3
 License: GPLv2 or later
 
 Member and board dashboard for HOA financial health, dues/autopay, ticketing,
@@ -75,6 +75,14 @@ Remaining setup:
   system cron at wp-cron.php.
 
 == Changelog ==
+
+= 0.0.3 (Build 003) =
+* New REST API (`hoa/v1` namespace) powering the companion iOS app: Bearer
+  app-token auth (login + Twilio 2FA challenge), and endpoints for reserves,
+  dues/payments, tickets, calendar, newsletter, PM reviews, and the PM audit
+  log — enforcing the exact same WordPress capabilities as the web dashboard.
+* New `hoa_app_tokens` table: hashed, revocable, per-device tokens.
+* CORS headers added for the REST namespace to support native/app clients.
 
 = 0.0.2 (Build 002) =
 * Automatic page creation on activation: Login, Dashboard, and three
