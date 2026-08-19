@@ -4,7 +4,7 @@ Tags: hoa, homeowners association, reserves, dues, payments, 2fa
 Requires at least: 6.0
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 0.0.1
+Stable tag: 0.0.2
 License: GPLv2 or later
 
 Member and board dashboard for HOA financial health, dues/autopay, ticketing,
@@ -37,14 +37,27 @@ Core features:
 
 == Required setup after activation ==
 
+Activation now creates all required pages automatically — no manual shortcode
+setup needed:
+
+* **HOA Login** (`[hoa_login]`)
+* **HOA Dashboard** (`[hoa_dashboard]`)
+* **HOA Member Guide** (`[hoa_doc role="member"]`)
+* **Board Member Guide** (`[hoa_doc role="board"]`)
+* **Property Manager Guide** (`[hoa_doc role="pm"]`)
+
+Find direct links to each under *HOA Dashboard > Shortcodes & Setup* in
+wp-admin. If a page is later deleted, it is recreated automatically the next
+time the plugin version changes, or immediately on deactivate/reactivate.
+
+Remaining setup:
+
 1. Go to *HOA Dashboard > Settings* and enter your Twilio Verify credentials
    and payment gateway keys.
-2. Create a page containing the shortcode `[hoa_login]`.
-3. Create a page containing the shortcode `[hoa_dashboard]`.
-4. Assign the **HOA Board Member** and **Property Manager** roles to the
+2. Assign the **HOA Board Member** and **Property Manager** roles to the
    appropriate users under Users > All Users. Homeowners default to
    **HOA Member**.
-5. Enter your association's reserve accounts under the Reserve Accounts tab
+3. Enter your association's reserve accounts under the Reserve Accounts tab
    (Board or Property Manager), sourced from your latest audited financial
    statement / reserve study.
 
@@ -62,6 +75,16 @@ Core features:
   system cron at wp-cron.php.
 
 == Changelog ==
+
+= 0.0.2 (Build 002) =
+* Automatic page creation on activation: Login, Dashboard, and three
+  role-specific documentation pages (Member, Board, Property Manager),
+  idempotent and self-healing if a page is later deleted.
+* New `[hoa_doc role="member|board|pm"]` shortcode with in-depth, role-tailored
+  usage guides.
+* Admin Setup screen now lists and links directly to all auto-created pages.
+* Dashboard now shows quick links to the relevant guide(s) for the logged-in
+  user's role(s).
 
 = 0.0.1 (Build 001) =
 * Initial release: roles/capabilities, Twilio 2FA, reserve health

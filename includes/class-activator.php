@@ -215,6 +215,8 @@ class HOA_Dash_Activator {
 
 		HOA_Dash_Roles::register_roles();
 
+		HOA_Dash_Page_Installer::install();
+
 		flush_rewrite_rules();
 	}
 

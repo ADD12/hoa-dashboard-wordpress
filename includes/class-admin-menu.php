@@ -63,18 +63,40 @@ class HOA_Dash_Admin_Menu {
 
 	public function render_setup_page() {
 		if ( ! current_user_can( 'manage_options' ) ) { return; }
+		$pages = HOA_Dash_Page_Installer::page_definitions();
 		?>
 		<div class="wrap">
 			<h1>HOA Dashboard — Setup</h1>
-			<p>Create a page and insert this shortcode to display the full member/board dashboard:</p>
-			<code>[hoa_dashboard]</code>
-			<p>Create a page (e.g. "Login") for the 2FA login flow:</p>
-			<code>[hoa_login]</code>
+			<p>The following pages were created automatically when the plugin was activated. If any is missing (e.g. you deleted it), it will be recreated the next time the plugin updates, or you can deactivate/reactivate the plugin.</p>
+			<table class="widefat" style="max-width:700px;">
+				<thead><tr><th>Page</th><th>Shortcode</th><th>Link</th></tr></thead>
+				<tbody>
+				<?php foreach ( $pages as $key => $def ) :
+					$id = HOA_Dash_Page_Installer::get_page_id( $key );
+					$url = $id ? get_permalink( $id ) : '';
+					$edit = $id ? get_edit_post_link( $id ) : '';
+				?>
+					<tr>
+						<td><?php echo esc_html( $def['title'] ); ?></td>
+						<td><code><?php echo esc_html( $def['shortcode'] ); ?></code></td>
+						<td>
+							<?php if ( $id ) : ?>
+								<a href="<?php echo esc_url( $url ); ?>" target="_blank">View</a> |
+								<a href="<?php echo esc_url( $edit ); ?>">Edit</a>
+							<?php else : ?>
+								<em>Not created yet</em>
+							<?php endif; ?>
+						</td>
+					</tr>
+				<?php endforeach; ?>
+				</tbody>
+			</table>
+
 			<h2>Roles created</h2>
 			<ul>
-				<li><strong>HOA Member</strong> — standard homeowner access</li>
-				<li><strong>HOA Board Member</strong> — full oversight: thresholds, audit log, escalation, PM reviews, newsletter approval</li>
-				<li><strong>Property Manager</strong> — narrower edit rights, all writes logged to the board-auditable PM Audit Log</li>
+				<li><strong>HOA Member</strong> — standard homeowner access. Documentation: <a href="<?php echo esc_url( HOA_Dash_Page_Installer::get_page_url( 'doc_member' ) ); ?>">HOA Member Guide</a></li>
+				<li><strong>HOA Board Member</strong> — full oversight: thresholds, audit log, escalation, PM reviews, newsletter approval. Documentation: <a href="<?php echo esc_url( HOA_Dash_Page_Installer::get_page_url( 'doc_board' ) ); ?>">Board Member Guide</a></li>
+				<li><strong>Property Manager</strong> — narrower edit rights, all writes logged to the board-auditable PM Audit Log. Documentation: <a href="<?php echo esc_url( HOA_Dash_Page_Installer::get_page_url( 'doc_pm' ) ); ?>">Property Manager Guide</a></li>
 			</ul>
 			<h2>Cron</h2>
 			<p>Autopay charges run daily via WP-Cron (<code>hoa_dash_daily_cron</code>). For reliability on low-traffic sites, set up a real server cron hitting <code>wp-cron.php</code>.</p>

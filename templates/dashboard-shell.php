@@ -5,6 +5,12 @@ $is_board = current_user_can( 'hoa_view_board_tools' );
 $is_pm    = current_user_can( 'hoa_property_manager' );
 ?>
 <div class="hoa-dash" id="hoa-dashboard-app">
+	<p class="hoa-help hoa-doc-links">
+		<?php esc_html_e( 'New here?', 'hoa-dashboard' ); ?>
+		<a href="<?php echo esc_url( HOA_Dash_Page_Installer::get_page_url( 'doc_member' ) ); ?>"><?php esc_html_e( 'Member Guide', 'hoa-dashboard' ); ?></a>
+		<?php if ( $is_board ) : ?> | <a href="<?php echo esc_url( HOA_Dash_Page_Installer::get_page_url( 'doc_board' ) ); ?>"><?php esc_html_e( 'Board Guide', 'hoa-dashboard' ); ?></a><?php endif; ?>
+		<?php if ( $is_pm ) : ?> | <a href="<?php echo esc_url( HOA_Dash_Page_Installer::get_page_url( 'doc_pm' ) ); ?>"><?php esc_html_e( 'Property Manager Guide', 'hoa-dashboard' ); ?></a><?php endif; ?>
+	</p>
 	<nav class="hoa-tabs">
 		<button class="hoa-tab-btn active" data-tab="overview"><?php esc_html_e( 'Overview', 'hoa-dashboard' ); ?></button>
 		<button class="hoa-tab-btn" data-tab="reserves"><?php esc_html_e( 'Reserve Accounts', 'hoa-dashboard' ); ?></button>

@@ -14,14 +14,16 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'HOA_DASH_VERSION', '0.0.1' );
-define( 'HOA_DASH_BUILD', '001' );
+define( 'HOA_DASH_VERSION', '0.0.2' );
+define( 'HOA_DASH_BUILD', '002' );
 define( 'HOA_DASH_PATH', plugin_dir_path( __FILE__ ) );
 define( 'HOA_DASH_URL', plugin_dir_url( __FILE__ ) );
 define( 'HOA_DASH_DB_VERSION', '1.0.0' );
 
 // Core includes
 require_once HOA_DASH_PATH . 'includes/class-activator.php';
+require_once HOA_DASH_PATH . 'includes/class-page-installer.php';
+require_once HOA_DASH_PATH . 'includes/class-documentation.php';
 require_once HOA_DASH_PATH . 'includes/class-roles.php';
 require_once HOA_DASH_PATH . 'includes/class-settings.php';
 require_once HOA_DASH_PATH . 'includes/class-2fa-twilio.php';
@@ -57,6 +59,7 @@ final class HOA_Dashboard_Plugin {
 	private function __construct() {
 		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
 		add_action( 'init', array( 'HOA_Dash_Roles', 'maybe_register_roles' ) );
+		add_action( 'init', array( 'HOA_Dash_Page_Installer', 'maybe_reinstall' ) );
 
 		// Module init
 		new HOA_Dash_Settings();
@@ -70,6 +73,7 @@ final class HOA_Dashboard_Plugin {
 		new HOA_Dash_Newsletter();
 		new HOA_Dash_Admin_Menu();
 		new HOA_Dash_Shortcodes();
+		new HOA_Dash_Documentation();
 		new HOA_Dash_Ajax();
 		new HOA_Dash_Login();
 
