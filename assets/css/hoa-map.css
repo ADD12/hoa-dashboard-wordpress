@@ -1,0 +1,143 @@
+.hoa-map-root {
+	position: relative;
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+.hoa-map-title {
+	margin-bottom: 8px;
+}
+
+.hoa-map-legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 16px;
+	margin-bottom: 12px;
+	font-size: 13px;
+}
+
+.hoa-map-legend-item {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.hoa-swatch {
+	display: inline-block;
+	width: 14px;
+	height: 14px;
+	border-radius: 3px;
+}
+
+.hoa-swatch--parcel  { background: rgba(59, 130, 246, 0.45); }   /* semi-transparent blue */
+.hoa-swatch--parking { background: #2f4f4f; }                    /* dark slate gray */
+.hoa-swatch--turf    { background: #228b22; }                    /* forest green */
+.hoa-swatch--pool     { background: linear-gradient(90deg, #06b6d4 50%, #f59e0b 50%); } /* cyan/amber */
+.hoa-swatch--path    { background: #fde047; }                    /* yellow glow */
+.hoa-swatch--tree    { background: #14532d; border-radius: 50%; } /* deep green circle */
+
+.hoa-map-canvas {
+	width: 100%;
+	height: 640px;
+	border-radius: 8px;
+	border: 1px solid #d9d9d9;
+	z-index: 1;
+}
+
+/* Contextual drawer */
+.hoa-map-drawer {
+	position: fixed;
+	top: 0;
+	right: 0;
+	height: 100%;
+	width: 380px;
+	max-width: 92vw;
+	background: #fff;
+	box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
+	padding: 24px;
+	overflow-y: auto;
+	z-index: 10000;
+	transform: translateX(100%);
+	transition: transform 0.2s ease-out;
+}
+
+.hoa-map-drawer:not(.hidden) {
+	transform: translateX(0);
+}
+
+.hoa-map-drawer.hidden {
+	transform: translateX(100%);
+}
+
+.hoa-map-drawer-close {
+	position: absolute;
+	top: 16px;
+	right: 16px;
+	background: none;
+	border: none;
+	font-size: 24px;
+	cursor: pointer;
+	line-height: 1;
+}
+
+.hoa-map-drawer-subtitle {
+	color: #666;
+	margin-top: -8px;
+	margin-bottom: 16px;
+}
+
+.hoa-map-drawer-body .hoa-field {
+	margin-bottom: 12px;
+}
+
+.hoa-map-drawer-body label {
+	display: block;
+	font-weight: 600;
+	margin-bottom: 4px;
+	font-size: 13px;
+}
+
+.hoa-map-drawer-body input,
+.hoa-map-drawer-body select,
+.hoa-map-drawer-body textarea {
+	width: 100%;
+	padding: 8px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	font-size: 14px;
+}
+
+.hoa-map-drawer-body button.hoa-btn {
+	background: #1d4ed8;
+	color: #fff;
+	border: none;
+	padding: 10px 16px;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 14px;
+}
+
+.hoa-map-drawer-body button.hoa-btn:hover {
+	background: #1e40af;
+}
+
+.hoa-map-drawer-body .hoa-solar-metric {
+	font-size: 28px;
+	font-weight: 700;
+	color: #b45309;
+}
+
+.hoa-map-login-notice {
+	padding: 24px;
+	text-align: center;
+	color: #666;
+}
+
+@media (max-width: 600px) {
+	.hoa-map-canvas {
+		height: 460px;
+	}
+	.hoa-map-drawer {
+		width: 100%;
+	}
+}

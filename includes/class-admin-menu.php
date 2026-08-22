@@ -21,6 +21,7 @@ class HOA_Dash_Admin_Menu {
 		?>
 		<div class="wrap">
 			<h1>HOA Dashboard Settings (v<?php echo esc_html( HOA_DASH_VERSION ); ?>)</h1>
+			<p class="description">These settings also configure the companion iOS app automatically (Payment Gateway, Public Key, HOA Name, and fees are fetched by the app at runtime via <code>/wp-json/hoa/v1/config</code> — nothing needs to be hardcoded or rebuilt in the app when you change them here). The Secret Key is never exposed to the app or any public endpoint.</p>
 			<form method="post" action="options.php">
 				<?php settings_fields( HOA_Dash_Settings::OPT_GROUP ); ?>
 				<h2>General</h2>

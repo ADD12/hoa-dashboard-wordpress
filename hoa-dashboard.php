@@ -14,8 +14,8 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'HOA_DASH_VERSION', '0.0.3' );
-define( 'HOA_DASH_BUILD', '003' );
+define( 'HOA_DASH_VERSION', '0.0.5' );
+define( 'HOA_DASH_BUILD', '005' );
 define( 'HOA_DASH_PATH', plugin_dir_path( __FILE__ ) );
 define( 'HOA_DASH_URL', plugin_dir_url( __FILE__ ) );
 define( 'HOA_DASH_DB_VERSION', '1.0.0' );
@@ -26,6 +26,7 @@ require_once HOA_DASH_PATH . 'includes/class-page-installer.php';
 require_once HOA_DASH_PATH . 'includes/class-documentation.php';
 require_once HOA_DASH_PATH . 'includes/class-rest-auth.php';
 require_once HOA_DASH_PATH . 'includes/class-rest-data.php';
+require_once HOA_DASH_PATH . 'includes/class-rest-config.php';
 require_once HOA_DASH_PATH . 'includes/class-roles.php';
 require_once HOA_DASH_PATH . 'includes/class-settings.php';
 require_once HOA_DASH_PATH . 'includes/class-2fa-twilio.php';
@@ -80,6 +81,7 @@ final class HOA_Dashboard_Plugin {
 		new HOA_Dash_Login();
 		new HOA_Dash_REST_Auth();
 		new HOA_Dash_REST_Data();
+		new HOA_Dash_REST_Config();
 
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_front_assets' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
