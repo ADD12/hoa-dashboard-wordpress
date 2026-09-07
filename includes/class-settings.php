@@ -30,6 +30,11 @@ class HOA_Dash_Settings {
 		register_setting( self::OPT_GROUP, 'hoa_dash_pm_firm_name' );
 		register_setting( self::OPT_GROUP, 'hoa_dash_state_disclosure_note' );
 		register_setting( self::OPT_GROUP, 'hoa_dash_newsletter_from_email' );
+
+		register_setting( self::OPT_GROUP, 'hoa_dash_map_address' );
+		register_setting( self::OPT_GROUP, 'hoa_dash_map_lat' );
+		register_setting( self::OPT_GROUP, 'hoa_dash_map_lng' );
+		register_setting( self::OPT_GROUP, 'hoa_dash_map_zoom' );
 	}
 
 	public static function get( $key, $default = '' ) {

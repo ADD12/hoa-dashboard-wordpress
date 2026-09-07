@@ -3,7 +3,7 @@
  * Plugin Name: HOA Dashboard
  * Plugin URI:  https://example.com/hoa-dashboard
  * Description: Member & board dashboard for HOA financial health (CA reserve study compliance), dues/autopay, ticketing, PM oversight/audit log, calendar, and newsletters.
- * Version:     0.0.1
+ * Version:     0.6.0
  * Author:      Your Organization
  * License:     GPLv2 or later
  * Text Domain: hoa-dashboard
@@ -14,8 +14,8 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'HOA_DASH_VERSION', '0.0.5' );
-define( 'HOA_DASH_BUILD', '005' );
+define( 'HOA_DASH_VERSION', '0.6.0' );
+define( 'HOA_DASH_BUILD', '008' );
 define( 'HOA_DASH_PATH', plugin_dir_path( __FILE__ ) );
 define( 'HOA_DASH_URL', plugin_dir_url( __FILE__ ) );
 define( 'HOA_DASH_DB_VERSION', '1.0.0' );
@@ -42,7 +42,30 @@ require_once HOA_DASH_PATH . 'includes/class-shortcodes.php';
 require_once HOA_DASH_PATH . 'includes/class-ajax.php';
 require_once HOA_DASH_PATH . 'includes/class-login.php';
 
+// HOA Map module
+if ( ! defined( 'HOA_MAP_PLUGIN_DIR' ) ) {
+	define( 'HOA_MAP_PLUGIN_DIR', HOA_DASH_PATH );
+}
+if ( ! defined( 'HOA_MAP_PLUGIN_URL' ) ) {
+	define( 'HOA_MAP_PLUGIN_URL', HOA_DASH_URL );
+}
+if ( ! defined( 'HOA_MAP_VERSION' ) ) {
+	define( 'HOA_MAP_VERSION', HOA_DASH_VERSION );
+}
+require_once HOA_DASH_PATH . 'includes/class-hoa-map-db.php';
+require_once HOA_DASH_PATH . 'includes/class-hoa-map-roles.php';
+require_once HOA_DASH_PATH . 'includes/class-hoa-map-rest.php';
+require_once HOA_DASH_PATH . 'includes/class-hoa-dashboard-map.php';
+HOA_Dashboard_Map::init();
+
+require_once HOA_DASH_PATH . 'includes/class-identity.php';
+HOA_Identity::init();
+
+require_once HOA_DASH_PATH . 'includes/class-multisite.php';
+HOA_Multisite::init();
+
 register_activation_hook( __FILE__, array( 'HOA_Dash_Activator', 'activate' ) );
+register_activation_hook( __FILE__, array( 'HOA_Map_DB', 'install' ) );
 register_deactivation_hook( __FILE__, array( 'HOA_Dash_Activator', 'deactivate' ) );
 
 /**

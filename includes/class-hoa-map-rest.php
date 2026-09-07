@@ -80,6 +80,124 @@ class HOA_Map_REST {
 			'callback'            => array( __CLASS__, 'broadcast' ),
 			'permission_callback' => array( 'HOA_Map_Roles', 'can_manage_common_areas' ),
 		) );
+
+		// ---------- Write endpoints (board/PM only — drawing tool) ----------
+
+		register_rest_route( self::NAMESPACE_, '/map/zones', array(
+			'methods'             => 'POST',
+			'callback'            => array( __CLASS__, 'save_zone' ),
+			'permission_callback' => array( 'HOA_Map_Roles', 'can_manage_common_areas' ),
+		) );
+
+		register_rest_route( self::NAMESPACE_, '/map/zones/(?P<zone_code>[a-zA-Z0-9\-_]+)', array(
+			'methods'             => 'DELETE',
+			'callback'            => array( __CLASS__, 'delete_zone' ),
+			'permission_callback' => array( 'HOA_Map_Roles', 'can_manage_common_areas' ),
+		) );
+
+		register_rest_route( self::NAMESPACE_, '/map/assets', array(
+			'methods'             => 'POST',
+			'callback'            => array( __CLASS__, 'save_asset' ),
+			'permission_callback' => array( 'HOA_Map_Roles', 'can_manage_common_areas' ),
+		) );
+
+		register_rest_route( self::NAMESPACE_, '/map/assets/(?P<asset_tag>[a-zA-Z0-9\-_]+)', array(
+			'methods'             => 'DELETE',
+			'callback'            => array( __CLASS__, 'delete_asset' ),
+			'permission_callback' => array( 'HOA_Map_Roles', 'can_manage_common_areas' ),
+		) );
+
+		register_rest_route( self::NAMESPACE_, '/map/parcels', array(
+			'methods'             => 'POST',
+			'callback'            => array( __CLASS__, 'save_parcel' ),
+			'permission_callback' => array( 'HOA_Map_Roles', 'can_manage_common_areas' ),
+		) );
+
+		register_rest_route( self::NAMESPACE_, '/map/parcels/(?P<parcel_code>[a-zA-Z0-9\-_]+)', array(
+			'methods'             => 'DELETE',
+			'callback'            => array( __CLASS__, 'delete_parcel' ),
+			'permission_callback' => array( 'HOA_Map_Roles', 'can_manage_common_areas' ),
+		) );
+
+		register_rest_route( self::NAMESPACE_, '/map/parcels/import', array(
+			'methods'             => 'POST',
+			'callback'            => array( __CLASS__, 'import_parcels' ),
+			'permission_callback' => array( 'HOA_Map_Roles', 'can_manage_common_areas' ),
+		) );
+	}
+
+	public static function save_zone( WP_REST_Request $request ) {
+		$p = $request->get_json_params();
+		if ( empty( $p['zone_code'] ) || empty( $p['zone_name'] ) || empty( $p['zone_type'] ) || empty( $p['geojson'] ) ) {
+			return new WP_Error( 'hoa_map_invalid_zone', __( 'zone_code, zone_name, zone_type, and geojson are required.', 'hoa-dashboard' ), array( 'status' => 400 ) );
+		}
+		$id = HOA_Map_DB::upsert_zone( array(
+			'zone_code'          => sanitize_text_field( $p['zone_code'] ),
+			'zone_name'          => sanitize_text_field( $p['zone_name'] ),
+			'zone_type'          => sanitize_text_field( $p['zone_type'] ),
+			'surface_sqft'       => isset( $p['surface_sqft'] ) ? floatval( $p['surface_sqft'] ) : null,
+			'solar_potential_kw' => isset( $p['solar_potential_kw'] ) ? floatval( $p['solar_potential_kw'] ) : null,
+			'geojson'            => $p['geojson'],
+		) );
+		return rest_ensure_response( array( 'id' => $id, 'zone_code' => $p['zone_code'] ) );
+	}
+
+	public static function delete_zone( WP_REST_Request $request ) {
+		HOA_Map_DB::delete_zone( $request->get_param( 'zone_code' ) );
+		return rest_ensure_response( array( 'deleted' => true ) );
+	}
+
+	public static function save_asset( WP_REST_Request $request ) {
+		$p = $request->get_json_params();
+		if ( empty( $p['asset_tag'] ) || empty( $p['asset_type'] ) || empty( $p['geojson'] ) ) {
+			return new WP_Error( 'hoa_map_invalid_asset', __( 'asset_tag, asset_type, and geojson are required.', 'hoa-dashboard' ), array( 'status' => 400 ) );
+		}
+		$id = HOA_Map_DB::upsert_asset( array(
+			'zone_code'      => isset( $p['zone_code'] ) ? sanitize_text_field( $p['zone_code'] ) : null,
+			'asset_tag'      => sanitize_text_field( $p['asset_tag'] ),
+			'asset_type'     => sanitize_text_field( $p['asset_type'] ),
+			'status'         => isset( $p['status'] ) ? sanitize_text_field( $p['status'] ) : 'operational',
+			'last_inspected' => isset( $p['last_inspected'] ) ? sanitize_text_field( $p['last_inspected'] ) : null,
+			'geojson'        => $p['geojson'],
+		) );
+		return rest_ensure_response( array( 'id' => $id, 'asset_tag' => $p['asset_tag'] ) );
+	}
+
+	public static function delete_asset( WP_REST_Request $request ) {
+		HOA_Map_DB::delete_asset( $request->get_param( 'asset_tag' ) );
+		return rest_ensure_response( array( 'deleted' => true ) );
+	}
+
+	public static function save_parcel( WP_REST_Request $request ) {
+		$p = $request->get_json_params();
+		if ( empty( $p['parcel_code'] ) || empty( $p['geojson'] ) ) {
+			return new WP_Error( 'hoa_map_invalid_parcel', __( 'parcel_code and geojson are required.', 'hoa-dashboard' ), array( 'status' => 400 ) );
+		}
+		$id = HOA_Map_DB::upsert_parcel( array(
+			'parcel_code' => sanitize_text_field( $p['parcel_code'] ),
+			'address'     => isset( $p['address'] ) ? sanitize_text_field( $p['address'] ) : null,
+			'geojson'     => $p['geojson'],
+		) );
+		return rest_ensure_response( array( 'id' => $id, 'parcel_code' => $p['parcel_code'] ) );
+	}
+
+	public static function delete_parcel( WP_REST_Request $request ) {
+		HOA_Map_DB::delete_parcel( $request->get_param( 'parcel_code' ) );
+		return rest_ensure_response( array( 'deleted' => true ) );
+	}
+
+	/**
+	 * Bulk import parcels from a pasted/uploaded GeoJSON FeatureCollection
+	 * (e.g. exported from a county assessor's open GIS data portal), so
+	 * parcel boundaries can match official records for audit purposes.
+	 */
+	public static function import_parcels( WP_REST_Request $request ) {
+		$p = $request->get_json_params();
+		if ( empty( $p['geojson']['features'] ) || ! is_array( $p['geojson']['features'] ) ) {
+			return new WP_Error( 'hoa_map_invalid_import', __( 'Expected a GeoJSON FeatureCollection with a features array.', 'hoa-dashboard' ), array( 'status' => 400 ) );
+		}
+		$result = HOA_Map_DB::bulk_import_parcels( $p['geojson']['features'] );
+		return rest_ensure_response( $result );
 	}
 
 	public static function get_zones( WP_REST_Request $request ) {

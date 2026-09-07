@@ -121,6 +121,59 @@
 	background: #1e40af;
 }
 
+.hoa-map-drawer-body button.hoa-btn-secondary {
+	background: #e5e7eb;
+	color: #111;
+	margin-left: 8px;
+}
+
+.hoa-map-drawer-body button.hoa-btn-secondary:hover {
+	background: #d1d5db;
+}
+
+.hoa-map-drawer-body button.hoa-btn-danger {
+	background: #fff;
+	color: #dc2626;
+	border: 1px solid #dc2626;
+	margin-top: 16px;
+	display: block;
+}
+
+.hoa-map-drawer-body button.hoa-btn-danger:hover {
+	background: #fef2f2;
+}
+
+.hoa-map-drawer-body .hoa-field.hidden {
+	display: none;
+}
+
+.hoa-map-drawer-body .hoa-field-note {
+	font-size: 12px;
+	color: #666;
+	margin: -6px 0 12px;
+}
+
+.hoa-swatch--boundary {
+	background: transparent;
+	border: 2px dashed #dc2626;
+}
+
+.hoa-import-control a {
+	background: #fff;
+	width: 30px;
+	height: 30px;
+	line-height: 30px;
+	display: block;
+	text-align: center;
+	font-size: 16px;
+	text-decoration: none;
+	color: #111;
+}
+
+.hoa-import-control a:hover {
+	background: #f4f4f4;
+}
+
 .hoa-map-drawer-body .hoa-solar-metric {
 	font-size: 28px;
 	font-weight: 700;

@@ -30,7 +30,7 @@ class HOA_Map_Roles {
 		$viewer_roles = apply_filters( 'hoa_map_viewer_roles', array(
 			'hoa_member',
 			'hoa_board_member',
-			'property_manager',
+			'hoa_property_manager',
 		) );
 		return (bool) array_intersect( $viewer_roles, (array) $user->roles );
 	}
@@ -46,7 +46,7 @@ class HOA_Map_Roles {
 		$user = wp_get_current_user();
 		$manager_roles = apply_filters( 'hoa_map_manager_roles', array(
 			'hoa_board_member',
-			'property_manager',
+			'hoa_property_manager',
 		) );
 		return (bool) array_intersect( $manager_roles, (array) $user->roles );
 	}

@@ -48,7 +48,6 @@ class HOA_Dash_Documentation {
 
 	private function member_doc() {
 		ob_start(); ?>
-		<h1>HOA Member Guide</h1>
 		<?php echo $this->shared_login_note(); ?>
 
 		<h2>1. Logging In &amp; Security</h2>
@@ -77,7 +76,6 @@ class HOA_Dash_Documentation {
 
 	private function board_doc() {
 		ob_start(); ?>
-		<h1>HOA Board Member Guide</h1>
 		<?php echo $this->shared_login_note(); ?>
 		<p>Board members see everything homeowners see, plus a <strong>Board Tools</strong> tab and elevated editing rights.</p>
 
@@ -107,7 +105,6 @@ class HOA_Dash_Documentation {
 
 	private function pm_doc() {
 		ob_start(); ?>
-		<h1>Property Manager Guide</h1>
 		<?php echo $this->shared_login_note(); ?>
 		<p>Your account has a distinct, narrower set of edit rights from board members. <strong>Every write action you take is logged</strong> to a board-visible audit trail (timestamp, action, and your IP address) — this is by design, for the association's security and your own protection as a record of the work performed.</p>
 

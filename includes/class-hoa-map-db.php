@@ -197,4 +197,135 @@ class HOA_Map_DB {
 			array( '%d' )
 		);
 	}
+
+	// ---------- Zones (common areas + HOA boundary) ----------
+
+	public static function upsert_zone( array $data ) {
+		global $wpdb;
+		$table = self::table_common_areas();
+		$existing = self::get_zone( $data['zone_code'] );
+
+		$row = array(
+			'zone_code'          => $data['zone_code'],
+			'zone_name'          => $data['zone_name'],
+			'zone_type'          => $data['zone_type'],
+			'surface_sqft'       => isset( $data['surface_sqft'] ) ? $data['surface_sqft'] : null,
+			'solar_potential_kw' => isset( $data['solar_potential_kw'] ) ? $data['solar_potential_kw'] : null,
+			'geojson'            => wp_json_encode( $data['geojson'] ),
+		);
+		$fmt = array( '%s', '%s', '%s', '%f', '%f', '%s' );
+
+		if ( $existing ) {
+			$wpdb->update( $table, $row, array( 'zone_code' => $data['zone_code'] ), $fmt, array( '%s' ) );
+			return $existing['id'];
+		}
+		$wpdb->insert( $table, $row, $fmt );
+		return $wpdb->insert_id;
+	}
+
+	public static function delete_zone( $zone_code ) {
+		global $wpdb;
+		return $wpdb->delete( self::table_common_areas(), array( 'zone_code' => $zone_code ), array( '%s' ) );
+	}
+
+	// ---------- Assets ----------
+
+	public static function upsert_asset( array $data ) {
+		global $wpdb;
+		$table = self::table_common_assets();
+		$existing = $wpdb->get_row(
+			$wpdb->prepare( "SELECT * FROM {$table} WHERE asset_tag = %s", $data['asset_tag'] ),
+			ARRAY_A
+		);
+
+		$row = array(
+			'zone_code'      => isset( $data['zone_code'] ) ? $data['zone_code'] : null,
+			'asset_tag'      => $data['asset_tag'],
+			'asset_type'     => $data['asset_type'],
+			'status'         => isset( $data['status'] ) ? $data['status'] : 'operational',
+			'last_inspected' => isset( $data['last_inspected'] ) ? $data['last_inspected'] : null,
+			'geojson'        => wp_json_encode( $data['geojson'] ),
+		);
+		$fmt = array( '%s', '%s', '%s', '%s', '%s', '%s' );
+
+		if ( $existing ) {
+			$wpdb->update( $table, $row, array( 'asset_tag' => $data['asset_tag'] ), $fmt, array( '%s' ) );
+			return $existing['id'];
+		}
+		$wpdb->insert( $table, $row, $fmt );
+		return $wpdb->insert_id;
+	}
+
+	public static function delete_asset( $asset_tag ) {
+		global $wpdb;
+		return $wpdb->delete( self::table_common_assets(), array( 'asset_tag' => $asset_tag ), array( '%s' ) );
+	}
+
+	// ---------- Parcels ----------
+
+	public static function upsert_parcel( array $data ) {
+		global $wpdb;
+		$table = self::table_parcels();
+		$existing = $wpdb->get_row(
+			$wpdb->prepare( "SELECT * FROM {$table} WHERE parcel_code = %s", $data['parcel_code'] ),
+			ARRAY_A
+		);
+
+		$row = array(
+			'parcel_code'   => $data['parcel_code'],
+			'owner_user_id' => isset( $data['owner_user_id'] ) ? $data['owner_user_id'] : null,
+			'address'       => isset( $data['address'] ) ? $data['address'] : null,
+			'geojson'       => wp_json_encode( $data['geojson'] ),
+		);
+		$fmt = array( '%s', '%d', '%s', '%s' );
+
+		if ( $existing ) {
+			$wpdb->update( $table, $row, array( 'parcel_code' => $data['parcel_code'] ), $fmt, array( '%s' ) );
+			return $existing['id'];
+		}
+		$wpdb->insert( $table, $row, $fmt );
+		return $wpdb->insert_id;
+	}
+
+	public static function delete_parcel( $parcel_code ) {
+		global $wpdb;
+		return $wpdb->delete( self::table_parcels(), array( 'parcel_code' => $parcel_code ), array( '%s' ) );
+	}
+
+	/**
+	 * Bulk-import parcels from a GeoJSON FeatureCollection, e.g. exported
+	 * from a county assessor's open-data GIS portal. Each feature's
+	 * properties should include a parcel identifier under one of:
+	 * 'parcel_code', 'APN', 'apn', or 'PARCEL_ID' — first match wins.
+	 * Returns counts so the UI can report results.
+	 */
+	public static function bulk_import_parcels( array $features ) {
+		$imported = 0;
+		$skipped  = 0;
+		foreach ( $features as $feature ) {
+			if ( empty( $feature['geometry'] ) ) {
+				$skipped++;
+				continue;
+			}
+			$props = isset( $feature['properties'] ) ? $feature['properties'] : array();
+			$code  = null;
+			foreach ( array( 'parcel_code', 'APN', 'apn', 'PARCEL_ID' ) as $key ) {
+				if ( ! empty( $props[ $key ] ) ) {
+					$code = sanitize_text_field( (string) $props[ $key ] );
+					break;
+				}
+			}
+			if ( ! $code ) {
+				$skipped++;
+				continue;
+			}
+			self::upsert_parcel( array(
+				'parcel_code' => $code,
+				'address'     => isset( $props['address'] ) ? sanitize_text_field( $props['address'] ) : ( isset( $props['SITUS_ADDR'] ) ? sanitize_text_field( $props['SITUS_ADDR'] ) : null ),
+				'geojson'     => $feature['geometry'],
+			) );
+			$imported++;
+		}
+		return array( 'imported' => $imported, 'skipped' => $skipped );
+	}
 }

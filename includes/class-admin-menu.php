@@ -56,6 +56,43 @@ class HOA_Dash_Admin_Menu {
 					<tr><th>Card Fee Flat ($)</th><td><input type="number" step="0.01" name="hoa_dash_card_fee_flat" value="<?php echo esc_attr( get_option( 'hoa_dash_card_fee_flat', '0.30' ) ); ?>"></td></tr>
 					<tr><th>ACH/Bank Fee Flat ($)</th><td><input type="number" step="0.01" name="hoa_dash_ach_fee_flat" value="<?php echo esc_attr( get_option( 'hoa_dash_ach_fee_flat', '1.00' ) ); ?>"></td></tr>
 				</table>
+				<h2>Map</h2>
+				<table class="form-table">
+					<tr><th>HOA Address</th><td>
+						<input type="text" id="hoa_dash_map_address" name="hoa_dash_map_address" value="<?php echo esc_attr( get_option( 'hoa_dash_map_address' ) ); ?>" class="regular-text" placeholder="e.g. 123 Main St, Long Beach, CA 90802">
+						<button type="button" class="button" id="hoa-dash-geocode-btn">Look up coordinates</button>
+						<p class="description" id="hoa-dash-geocode-status"></p>
+					</td></tr>
+					<tr><th>Latitude</th><td><input type="text" id="hoa_dash_map_lat" name="hoa_dash_map_lat" value="<?php echo esc_attr( get_option( 'hoa_dash_map_lat' ) ); ?>" class="regular-text"></td></tr>
+					<tr><th>Longitude</th><td><input type="text" id="hoa_dash_map_lng" name="hoa_dash_map_lng" value="<?php echo esc_attr( get_option( 'hoa_dash_map_lng' ) ); ?>" class="regular-text"></td></tr>
+					<tr><th>Default Zoom</th><td><input type="number" min="1" max="20" name="hoa_dash_map_zoom" value="<?php echo esc_attr( get_option( 'hoa_dash_map_zoom', '18' ) ); ?>" style="width:80px;"> <span class="description">1 (world) – 20 (building-level). 18 is a good street/property-level default.</span></td></tr>
+				</table>
+				<script>
+				(function(){
+					var btn = document.getElementById('hoa-dash-geocode-btn');
+					if (!btn) return;
+					btn.addEventListener('click', function(){
+						var addr = document.getElementById('hoa_dash_map_address').value.trim();
+						var status = document.getElementById('hoa-dash-geocode-status');
+						if (!addr) { status.textContent = 'Enter an address first.'; return; }
+						status.textContent = 'Looking up…';
+						fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(addr))
+							.then(function(r){ return r.json(); })
+							.then(function(results){
+								if (!results || !results.length) {
+									status.textContent = 'No match found — try a more specific address, or enter latitude/longitude manually below.';
+									return;
+								}
+								document.getElementById('hoa_dash_map_lat').value = parseFloat(results[0].lat).toFixed(6);
+								document.getElementById('hoa_dash_map_lng').value = parseFloat(results[0].lon).toFixed(6);
+								status.textContent = 'Found: ' + results[0].display_name + '. Click "Save Changes" below to apply.';
+							})
+							.catch(function(){
+								status.textContent = 'Lookup failed — check your connection, or enter latitude/longitude manually below.';
+							});
+					});
+				})();
+				</script>
 				<?php submit_button(); ?>
 			</form>
 		</div>
